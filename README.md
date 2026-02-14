@@ -1,0 +1,2 @@
+# ai-based-covid-19-fake-news-detection-and-misinformation-analyzer-fyp
+AI-powered web application that detects COVID-19 fake news from pasted text or URLs using transformer-based NLP models. The system outputs Real/Fake labels with confidence scores, retrieves supporting fact-check evidence, and provides an admin dashboard to monitor performance and improve misinformation detection. Ensures reliable real-time checks.
