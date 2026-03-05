@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- Responsive -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="auth-page">
+  <div class="container" role="main" aria-labelledby="loginTitle">
+
+    <!-- BRAND BLOCK-->
+    <div class="brand-header">
+      <img
+        src="{{ url_for('static', filename='user_logo.png') }}"
+        class="brand-logo"
+        alt="TrueCovAI logo">
+      <h1 class="brand-name">TrueCovAI</h1>
+      <p class="brand-tagline">
+        Covid-19 Fake News Detection and Misinformation Analyzer
+      </p>
+    </div>
+    <!-- end BRAND BLOCK -->
+
+    <h2 id="loginTitle" class="form-title">Login</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-list">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.login') }}">
+      <input type="email" name="email" placeholder="Email" required>
+
+      <div class="password-container">
+        <input type="password" name="password" id="password" placeholder="Password" required
+               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,20}$"
+               title="Password must be 8-20 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.">
+        <span class="toggle-password" title="Show/Hide Password" onclick="togglePassword('password', this)">
+          <i class="fas fa-eye"></i>
+        </span>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <p class="auth-alt">
+      Don't have an account?
+      <a href="{{ url_for('auth.register') }}">Register here</a>.
+    </p>
+  </div>
+
+  <script>
+    function togglePassword(id, el) {
+      const input = document.getElementById(id);
+      const icon  = el.querySelector('i');
+      const show  = input.type === "password";
+      input.type = show ? "text" : "password";
+      icon.classList.toggle('fa-eye', !show);
+      icon.classList.toggle('fa-eye-slash', show);
+    }
+  </script>
+</body>
+</html>

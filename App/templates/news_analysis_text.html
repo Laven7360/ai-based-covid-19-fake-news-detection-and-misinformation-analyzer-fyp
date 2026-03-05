@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News Analysis (Text)</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="article-verification-page">
+  <div class="article-wrapper">
+
+<!-- Left Section -->
+<div class="article-left">
+  <div class="brand-block">
+    <img src="{{ url_for('static', filename='user_logo.png') }}" alt="Logo" class="article-logo" />
+    <h2 class="article-title">Covid-19 Fake News Detection and Misinformation Analyzer</h2>
+  </div>
+
+  <!-- Vertical sticker column -->
+<div class="sticker-col">
+  <!-- Top mask sticker -->
+  <img src="{{ url_for('static', filename='covid_mask.png') }}"
+       alt="Mask Sticker" class="sticker sticker-mask" />
+
+  <!-- Bottom row: vaccine + virus -->
+  <div class="sticker-row">
+    <img src="{{ url_for('static', filename='covid_vaccine.png') }}"
+         alt="Vaccine Sticker" class="sticker sticker-vaccine" />
+    <img src="{{ url_for('static', filename='covid_virus.png') }}"
+         alt="Virus Sticker" class="sticker sticker-virus" />
+  </div>
+</div>
+</div>
+
+    <!-- Right Section -->
+    <div class="article-right">
+      <h2 class="article-heading">News Analysis (Text)</h2>
+      <p class="article-description">Paste any news article text related to Covid-19 to analyze its authenticity.</p>
+
+      <form method="POST" action="{{ url_for('main.news_analysis_text') }}">
+  <textarea name="article_text" placeholder="Enter news content here..." required>
+{{ (request.form.article_text if request and request.form else article_text) or '' }}</textarea>
+  <button type="submit" class="verify-btn">Verify Now</button>
+</form>
+
+{% if result %}
+  <div class="article-result result-box {{ result.label | lower }}">
+    <h3 class="result-label">{{ result.label }}</h3>
+    <div class="result-grid">
+      <p><strong>Confidence Score:</strong> {{ result.confidence }}%</p>
+      {% if result.error %}<p style="color:#b00"><strong>Error:</strong> {{ result.error }}</p>{% endif %}
+    </div>
+
+    {% if article_text %}
+      <p><strong>Text analyzed:</strong></p>
+      <div class="user-text">{{ article_text | e }}</div>
+    {% endif %}
+  </div>
+{% endif %}
+
+    </div>
+
+  </div>
+</body>
+</html>

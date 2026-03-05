@@ -1,0 +1,111 @@
+<!-- templates/verify_claims.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fake News Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
+  <style>
+    html, body { min-height: 100%; height: auto; overflow-y: auto; }
+    .evidence-scroll {
+      max-height: 48vh; overflow-y: auto; margin-top: 8px; padding-right: 8px;
+    }
+    .evidence-list { margin: 0; padding-left: 1.25rem; }
+    .evidence-item { margin-bottom: 12px; }
+    .evidence-item .meta  { font-size: 12px; opacity: .75; margin-bottom: 4px; }
+    .evidence-item .title { font-weight: 600; }
+    .evidence-item .snippet { font-size: 14px; opacity: .9; margin-top: 2px; }
+    .evidence-item .scores  { font-size: 12px; opacity: .7; margin-top: 2px; }
+    .evidence-scroll::-webkit-scrollbar { width: 8px; }
+    .evidence-scroll::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 8px; }
+  </style>
+</head>
+<body class="article-verification-page">
+  <div class="article-wrapper">
+
+    <div class="article-left">
+      <div class="brand-block">
+        <img src="{{ url_for('static', filename='user_logo.png') }}" alt="Logo" class="article-logo" />
+        <h2 class="article-title">Claim Verification (Evidence-based)</h2>
+      </div>
+    </div>
+
+    <div class="article-right">
+      <h2 class="article-heading">Enter a Claim</h2>
+      <p class="article-description">
+        We query Google’s Fact Check Tools API (e.g., PolitiFact, Snopes, Reuters). Then we run an NLI check to see if the evidence supports or refutes your claim — including paraphrases and negations.
+      </p>
+
+      <form method="POST" action="{{ url_for('main.fake_verify') }}">
+        <textarea name="claim_text" placeholder="e.g., COVID-19 spreads through drinking water." required>{{ (request.form.claim_text if request and request.form else claim_text) or '' }}</textarea>
+        <button type="submit" class="verify-btn">Verify</button>
+      </form>
+
+      {% if result %}
+        {% set top_label = {
+          'supports':'Likely True',
+          'refutes':'Likely False',
+          'insufficient':'Not enough evidence'
+        }[result.verdict] %}
+
+        <div class="article-result result-box">
+          <h3 class="result-label" style="text-transform: none;">
+            Verdict: {{ top_label }} (Confidence {{ (result.confidence*100)|round(1) }}%)
+          </h3>
+
+          {% if result.error %}
+            <p style="color:#cc0000"><strong>Error:</strong> {{ result.error }}</p>
+          {% endif %}
+
+          {% if result.evidence and result.evidence|length > 0 %}
+            <div class="result-grid" style="grid-template-columns: 1fr;">
+              <p><strong>Top Evidence:</strong></p>
+              <div class="evidence-scroll" role="region" aria-label="Evidence list">
+                <ol class="evidence-list">
+                  {% for ev in result.evidence %}
+                    <li class="evidence-item">
+                      <div class="meta">
+                        Source: <strong>{{ ev.source }}</strong>
+                        {% if ev.rating %} — rating: <strong>{{ ev.rating }}</strong>{% endif %}
+                        — <a href="{{ ev.url }}" target="_blank" rel="noopener">open</a>
+                      </div>
+                      <div class="title">Title: {{ ev.title }}</div>
+                      <div class="snippet">Snippet: {{ ev.snippet }}</div>
+                      <div class="scores">
+                        entailment = {{ (ev.entailment*100)|round(1) }}% |
+                        contradiction = {{ (ev.contradiction*100)|round(1) }}%
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ol>
+              </div>
+            </div>
+          {% else %}
+            <p>No strong evidence found via Google’s Fact Check Tools.</p>
+
+            {# --------- ADD THIS BLOCK: show model fallback if present --------- #}
+            {% if result.model_pred %}
+              <p style="margin-top:8px;">
+                <em>Model suggestion:</em>
+                likely
+                <strong>
+                  {{ 'fake' if result.model_pred.label|lower == 'fake' else
+                     ('real' if result.model_pred.label|lower == 'real' else result.model_pred.label) }}
+                </strong>
+                {% if result.model_pred.prob is defined and result.model_pred.prob is not none %}
+                  (p = {{ (result.model_pred.prob*100)|round(1) }}%)
+                {% endif %}
+              </p>
+            {% endif %}
+            {# ------------------------------------------------------------------ #}
+
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>

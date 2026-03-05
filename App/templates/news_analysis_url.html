@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News Analysis (URL)</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="article-verification-page">
+  <div class="article-wrapper">
+
+    <!-- Left Section (same as text page: logo + stickers) -->
+    <div class="article-left">
+      <div class="brand-block">
+        <img src="{{ url_for('static', filename='user_logo.png') }}" alt="Logo" class="article-logo" />
+        <h2 class="article-title">Covid-19 Fake News Detection and Misinformation Analyzer</h2>
+      </div>
+
+      <div class="sticker-col">
+        <img src="{{ url_for('static', filename='covid_mask.png') }}"
+             alt="Mask Sticker" class="sticker sticker-mask" />
+        <div class="sticker-row">
+          <img src="{{ url_for('static', filename='covid_vaccine.png') }}"
+               alt="Vaccine Sticker" class="sticker sticker-vaccine" />
+          <img src="{{ url_for('static', filename='covid_virus.png') }}"
+               alt="Virus Sticker" class="sticker sticker-virus" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Section -->
+    <div class="article-right">
+      <h2 class="article-heading">News Analysis (URL)</h2>
+      <p class="article-description">Paste a news article link to analyze its authenticity.</p>
+
+      <form method="POST" action="{{ url_for('main.news_analysis_url') }}">
+        <input type="url"
+               name="article_url"
+               placeholder="Enter news article link here..."
+               value="{{ (request.form.article_url if request and request.form else article_url) or '' }}"
+               required />
+        <button type="submit" class="verify-btn">Analyze</button>
+      </form>
+
+      {% if result %}
+      <div class="article-result result-box {{ result.label | lower }}">
+        <h3 class="result-label">{{ result.label }}</h3>
+
+        <!-- Centered info row (same behavior as text page) -->
+        <div class="result-grid">
+          <p><strong>Confidence Score:</strong> {{ result.confidence }}%</p>
+          {% if result.source_domain %}
+            <p><strong>Source:</strong> {{ result.source_domain }}</p>
+          {% endif %}
+        </div>
+
+        {% if result.title_used %}
+          <p><strong>Title analyzed:</strong></p>
+          <div class="user-text">{{ result.title_used }}</div>
+        {% else %}
+          {% if article_url %}
+            <p><strong>URL analyzed:</strong></p>
+            <div class="user-text">
+              <a href="{{ article_url }}" target="_blank" rel="noopener">{{ article_url }}</a>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>

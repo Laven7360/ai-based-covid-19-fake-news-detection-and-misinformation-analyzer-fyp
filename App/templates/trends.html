@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>COVID-19 Trends</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <!-- Chart.js + time adapter + zoom plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2"></script>
+</head>
+
+<body class="article-verification-page trends-page">
+  <div class="article-wrapper">
+
+    <div class="article-left">
+      <div class="brand-header">
+        <img src="{{ url_for('static', filename='user_logo.png') }}" class="brand-logo" alt="TrueCovAI logo">
+        <h2 class="article-title">Covid-19 Fake News Detection and Misinformation Analyzer</h2>
+      </div>
+
+      <div class="sticker-col">
+        <img src="{{ url_for('static', filename='covid_mask.png') }}" class="sticker sticker-mask" alt="Mask" />
+        <div class="sticker-row">
+          <img src="{{ url_for('static', filename='covid_vaccine.png') }}" class="sticker sticker-vaccine" alt="Vaccine" />
+          <img src="{{ url_for('static', filename='covid_virus.png') }}" class="sticker sticker-virus" alt="Virus" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Right (title + centered chart card) -->
+    <div class="article-right">
+      <h2 class="article-heading">COVID-19 Cumulative Cases — Malaysia</h2>
+      <p class="article-description">
+        Explore the trend; pinch/scroll to zoom. Use the reset button to return.
+      </p>
+
+      <div class="trend-card">
+        <div class="chart-wrap">
+          <canvas id="cumChart"></canvas>
+        </div>
+        <button id="resetZoom" class="verify-btn reset-zoom-btn">Reset Zoom</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (async function () {
+    const res = await fetch("{{ url_for('main.trends_data') }}");
+    const { dates, malaysia } = await res.json();
+
+    const ctx = document.getElementById("cumChart").getContext("2d");
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: dates.map(d => new Date(d)),
+        datasets: [{
+          label: "Malaysia (cumulative)",
+          data: malaysia,
+          borderWidth: 2,
+          tension: 0.2,
+          fill: false,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 6, right: 12, bottom: 18, left: 12 } },
+        scales: {
+          x: { type: "time", time: { unit: "month" } },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: v => (v >= 1e6 ? (v/1e6).toFixed(1) + "M" : v)
+            }
+          }
+        },
+        plugins: {
+          legend: { position: "bottom" },
+          tooltip: { mode: "nearest", intersect: false },
+          zoom: {
+            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: "x" },
+            pan:  { enabled: true, mode: "x" }
+          }
+        }
+      }
+    });
+
+    document.getElementById("resetZoom").addEventListener("click", () => chart.resetZoom());
+  })();
+  </script>
+</body>
+</html>

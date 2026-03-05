@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="custom-dashboard">
+  <div class="custom-container">
+    
+    <!-- LEFT SIDE: Logo & Tagline -->
+    <div class="custom-left">
+      <img src="{{ url_for('static', filename='user_background.jpg') }}" class="left-bg" alt="Left Background" />
+      <div class="left-content">
+        <img src="{{ url_for('static', filename='user_logo.png') }}" class="logo-img" alt="True Scope AI Logo" />
+        <h1 class="brand-title">Covid-19 Fake News Detection and Misinformation Analyzer</h1>
+        <p class="brand-tagline">Where Truth Meets Technology</p>
+        <!-- Covid-19 Edition stamp (below tagline) -->
+        <div class="stamp-wrap">
+          <img
+             class="covid-stamp"
+             src="{{ url_for('static', filename='covid_stamp.png') }}"
+             alt="Covid-19 Edition"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: Menu -->
+    <div class="custom-right">
+      <div class="button-group">
+        <a href="{{ url_for('main.news_analysis_text') }}" class="custom-btn">
+          1. News Analysis (Text) <span>›</span>
+        </a>
+        <a href="{{ url_for('main.news_analysis_url') }}" class="custom-btn">
+          2. News Analysis (URL) <span>›</span>
+        </a>
+        <a href="{{ url_for('main.fake_verify') }}" class="custom-btn">
+          3. Fake News Verification <span>›</span>
+        </a>
+        <a href="{{ url_for('main.trends') }}" class="custom-btn">
+          4. COVID-19 Analytics <span>›</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

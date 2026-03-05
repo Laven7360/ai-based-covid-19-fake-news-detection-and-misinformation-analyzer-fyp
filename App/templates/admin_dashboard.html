@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2"></script>
+</head>
+
+<!-- this class applies the admin-specific styling in style.css -->
+<body class="admin">
+
+  <header class="admin-header">
+    <div class="admin-title">
+      <h1>Admin Dashboard</h1>
+      <p>COVID-19 Fake News Detection • Control Panel</p>
+    </div>
+    <nav class="admin-nav">
+      <a class="btn-ghost" href="{{ url_for('auth.login') }}">Logout</a>
+    </nav>
+  </header>
+
+  <!-- KPI cards -->
+  <section class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Users</div>
+      <div class="kpi-value" id="kpiUsers">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Total Submissions</div>
+      <div class="kpi-value" id="kpiSubs">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Fake Detected</div>
+      <div class="kpi-value accent-danger" id="kpiFake">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Real Detected</div>
+      <div class="kpi-value accent-success" id="kpiReal">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Agreement Rate</div>
+      <div class="kpi-value" id="kpiAgree">0%</div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="chart-grid">
+    <div class="chart-card">
+      <h3>Last 30 Days • Submissions & Outcomes</h3>
+      <div class="chart-wrap"><canvas id="chartSubmissions"></canvas></div>
+    </div>
+
+<div class="chart-card">
+  <h3>COVID-19 • Cumulative Confirmed Cases — Malaysia</h3>
+
+  <div class="chart-wrap" style="height: 360px;">
+    <canvas id="chartCovidCum"></canvas>
+  </div>
+  <!-- Reset Zoom button goes here -->
+  <button id="resetZoomBtn" class="btn-blue" style="margin-top:12px;">Reset Zoom</button>
+</div>
+
+  <!-- Recent Activity -->
+  <section class="table-card">
+    <h3>Recent Activity</h3>
+    <div class="table-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width: 110px;">Time</th>
+            <th style="width: 90px;">User</th>
+            <th>Snippet</th>
+            <th style="width: 120px;">Label</th>
+            <th style="width: 160px;">Verification</th>
+            <th style="width: 80px;">Conf.</th>
+          </tr>
+        </thead>
+        <tbody id="recentTbody">
+          <!-- rows injected by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script src="{{ url_for('static', filename='js/admin_dashboard.js') }}"></script>
+</body>
+</html>
